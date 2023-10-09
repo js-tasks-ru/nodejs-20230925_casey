@@ -10,6 +10,12 @@ server.on('request', (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname.slice(1);
 
+  if (pathname.includes('/') || pathname.includes('..')) {
+    res.statusCode = 400;
+    res.end('Nested paths are not allowed');
+    return;
+  }
+
   const filepath = path.join(__dirname, 'files', pathname);
 
   const limitStream = new LimitSizeStream({limit: 1e6});
