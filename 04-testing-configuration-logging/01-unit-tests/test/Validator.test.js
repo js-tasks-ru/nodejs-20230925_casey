@@ -12,12 +12,23 @@ describe('testing-configuration-logging/unit-tests', () => {
         },
       });
 
-      const errors = validator.validate({name: 'Lalala'});
+      let errors = validator.validate({name: 'Lalala'});
 
       expect(errors).to.have.length(1);
       expect(errors[0]).to.have.property('field').and.to.be.equal('name');
       expect(errors[0]).to.have.property('error').and.to.be.equal('too short, expect 10, got 6');
+
+      errors = validator.validate({name: 'Lalalalalalalalalalala'});
+
+      expect(errors).to.have.length(1);
+      expect(errors[0]).to.have.property('field').and.to.be.equal('name');
+      expect(errors[0]).to.have.property('error').and.to.be.equal('too long, expect 20, got 22');
+
+      errors = validator.validate({name: 'Lalalalalala'});
+
+      expect(errors).to.be.empty;
     });
+
     it('валидатор проверяет числовые поля', () => {
       const validator = new Validator({
         age: {
@@ -27,12 +38,23 @@ describe('testing-configuration-logging/unit-tests', () => {
         },
       });
 
-      const errors = validator.validate({age: 6});
+      let errors = validator.validate({age: 4});
 
       expect(errors).to.have.length(1);
       expect(errors[0]).to.have.property('field').and.to.be.equal('age');
-      expect(errors[0]).to.have.property('error').and.to.be.equal('too little, expect 10, got 6');
+      expect(errors[0]).to.have.property('error').and.to.be.equal('too little, expect 10, got 4');
+
+      errors = validator.validate({age: 30});
+
+      expect(errors).to.have.length(1);
+      expect(errors[0]).to.have.property('field').and.to.be.equal('age');
+      expect(errors[0]).to.have.property('error').and.to.be.equal('too big, expect 20, got 30');
+
+      errors = validator.validate({age: 12});
+
+      expect(errors).to.be.empty;
     });
+
     it('валидатор проверяет несколько полей', () => {
       const validator = new Validator({
         name: {
