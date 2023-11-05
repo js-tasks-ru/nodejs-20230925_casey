@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 const mapProduct = require('../mappers/product');
 
 module.exports.productsBySubcategory = async function productsBySubcategory(ctx, next) {
@@ -6,12 +7,12 @@ module.exports.productsBySubcategory = async function productsBySubcategory(ctx,
 
   if (!subcategory) return next();
 
-  const productsBySubcategory = await Product.find({subcategory: subcategory});
-  ctx.body = {productsBySubcategory: productsBySubcategory.map(mapProduct)};
+  const products = await Product.find({subcategory: subcategory}).limit(20);
+  ctx.body = {products: products.map(mapProduct)};
 };
 
 module.exports.productList = async function productList(ctx, next) {
-  const products = await Product.find();
+  const products = await Product.find().limit(20);
   ctx.body = {products: products.map(mapProduct)};
 };
 
