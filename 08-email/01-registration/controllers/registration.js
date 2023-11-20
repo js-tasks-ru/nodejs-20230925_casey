@@ -13,6 +13,7 @@ module.exports.register = async (ctx, next) => {
   await user.setPassword(ctx.request.body.password);
   await user.save();
 
+  // отправляем токен для подтверждения
   await sendMail({
     to: user.email,
     subject: 'Подтвердите почту',
@@ -23,7 +24,9 @@ module.exports.register = async (ctx, next) => {
   ctx.body = {status: 'ok'};
 };
 
+// при подтверждении из письма
 module.exports.confirm = async (ctx, next) => {
+  // ищем юзера по значению переданного токена
   const user = await User.findOne({
     verificationToken: ctx.request.body.verificationToken,
   });
@@ -31,11 +34,11 @@ module.exports.confirm = async (ctx, next) => {
   if (!user) {
     ctx.throw(400, 'Ссылка подтверждения недействительна или устарела');
   }
-
+  // если юзер найден - удаляем токен подтверждения
   user.verificationToken = undefined;
   await user.save();
 
+  // аутентифицировать пользователя, сгенерировав для него новый ключ сесии (также, с помощью uuid)
   const token = uuid();
-
   ctx.body = {token};
 };

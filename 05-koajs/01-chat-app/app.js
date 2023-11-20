@@ -11,7 +11,7 @@ const router = new Router();
 const clients = new Set();
 
 router.get('/subscribe', async (ctx, next) => {
-  const message = await new Promise((resolve, reject) => {
+  const message = await new Promise((resolve) => {
     clients.add(resolve);
 
     ctx.res.on('close', function() {
@@ -30,7 +30,7 @@ router.post('/publish', async (ctx, next) => {
     ctx.throw(400, 'required field `message` is missing');
   }
 
-  clients.forEach(function(resolve) {
+  clients.forEach((resolve) => {
     resolve(message);
   });
 

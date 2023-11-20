@@ -17,14 +17,15 @@ module.exports.productList = async function productList(ctx, next) {
 };
 
 module.exports.productById = async function productById(ctx, next) {
-  if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) {
+  const id = ctx.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     ctx.throw(400, 'invalid product id');
   }
-
-  const product = await Product.findById(ctx.params.id);
+  const product = await Product.findById(id);
 
   if (!product) {
-    ctx.throw(404, `no product with ${ctx.params.id} id`);
+    ctx.throw(404, `no product with ${id} id`);
   }
 
   ctx.body = {product: mapProduct(product)};
